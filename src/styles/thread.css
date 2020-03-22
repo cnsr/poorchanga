@@ -1,0 +1,62 @@
+.threads {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: left;
+    vertical-align: baseline;
+}
+
+.thread-wrapper {
+    min-height: 120px;
+    min-width: 450px;
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-left: 1%;
+    margin-bottom: 0.75rem;
+}
+
+.thread {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+}
+
+.thread-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 0.15rem .25rem .25rem .25rem;
+}
+
+.thread-header > div {
+    margin: 0 3px;
+}
+
+/* COLOR */
+.count:hover, .reply:hover {
+    color:#00807F;
+    cursor: pointer;
+}
+
+.counter, .reply {
+    cursor: pointer;
+}
+
+.thread-body {
+    margin-left: .3rem;
+}
+
+.body-text {
+    word-break: break-all;
+    max-width: 99%;
+    text-align: left;
+}
+
+.thread-replies, .replies {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+}

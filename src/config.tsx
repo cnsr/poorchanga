@@ -1,0 +1,1 @@
+export const defaultUrl: string = 'https://poorch.ga/';
