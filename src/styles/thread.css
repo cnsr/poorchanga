@@ -60,3 +60,11 @@
     justify-content: flex-start;
     align-items: baseline;
 }
+
+.pager {
+    cursor: pointer;
+}
+
+.pager-disabled {
+    color: lightgray;
+}

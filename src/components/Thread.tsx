@@ -60,6 +60,7 @@ const Thread:FC<ThreadInterface> = (props: ThreadInterface) => {
                     </p>
                 </div>
                 <div className='thread-replies replies'>
+                    <span className='pre-reply'><i>Replies: </i></span>
                     {props.replies!.map((reply) => 
                         (<span className='thread-reply reply' id={`reply=${reply}`} key={`reply=${reply}`}>
                             >>{reply}

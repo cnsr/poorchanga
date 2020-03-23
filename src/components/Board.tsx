@@ -1,11 +1,17 @@
 import React, {Fragment, useState, useEffect, useCallback} from 'react';
 import { useHistory, useParams } from "react-router-dom";
 import axios from 'axios'
+import { observer } from "mobx-react-lite";
+import {onSnapshot} from 'mobx-state-tree';
+import {RootStoreModel} from '../store/root';
+import useInject from "../hooks/useInject";
 
 import Thread from './Thread'
 import '../styles/thread.css'
 
 import {defaultUrl} from '../config';
+
+const mapStore = (rootStore: RootStoreModel) => ({settings: rootStore.settings});
 
 interface BoardProps {
 }
@@ -51,7 +57,9 @@ interface ThreadInterface {
 }
 
 
-const Main: React.FC<BoardProps> = (props) => {
+const Main: React.FC<BoardProps> = observer((props) => {
+    const { settings } = useInject(mapStore);
+
     const board = useParams<RouteParams>().board;
     const history = useHistory();
     const [error, setError] = useState('');
@@ -59,22 +67,45 @@ const Main: React.FC<BoardProps> = (props) => {
     const [pageSize, setPageSize] = useState(10);
 
     const [page, setPage] = useState(0);
+    const [pages, setPages] = useState(1);
 
+    const changePageSize = () => {
+        setPageSize(settings.pageSize);
+        if (threads) setPages(totalPages(threads.length))
+        // if (page > pages) setPage(pages);
+    }
+
+    useEffect(() => {
+        if (page > pages) setPage(pages);
+    }, [pages]);
+
+    const [threads, setThreads] = useState<Array<ThreadInterface> | null>([]);
+
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        changePageSize()
+    }, [])
+
+
+    onSnapshot(settings, changePageSize)
+
+    
     const perPage = (): number => {
         return page * pageSize;
     }
 
+    const totalPages = (th: number) => Math.floor(th / settings.pageSize);
+
+
     const incrementPage = () => {
-        if (Math.floor(threads!.length / pageSize) != page) setPage(page + 1)
+        if (pages != page) setPage(page + 1)
     }
 
     const decrementPage = () => {
         if (page > 0) setPage(page - 1)
     }
 
-    const [threads, setThreads] = useState<Array<ThreadInterface> | null>([]);
-
-    const [isLoaded, setIsLoaded] = useState(false);
 
     const loadData = () => {
         if (!boards.includes(board)) {
@@ -83,6 +114,7 @@ const Main: React.FC<BoardProps> = (props) => {
         axios.get(`${defaultUrl}${board}/json/`).then(resp => {
             setThreads(resp.data)
             setIsLoaded(true);
+            setPages(totalPages(resp.data.length))
             // console.log(resp.data[0])
         })
     }
@@ -101,11 +133,11 @@ const Main: React.FC<BoardProps> = (props) => {
             }) : <span>"loading"</span>}
         </div>
         <div className='pagination'>
-            <span onClick={decrementPage}>⮘</span>
+            <span className={ page === 0 ? 'pager-disabled pager' : 'pager' } onClick={decrementPage}>⮘</span>
             <span>{page}</span>
-            <span onClick={incrementPage}>⮚</span>
+            <span className={ page === pages ? 'pager-disabled pager': 'pager' } onClick={incrementPage}>⮚</span>
         </div>
     </Fragment>)
-}
+})
 
 export default Main;

@@ -16,7 +16,7 @@ const Main: React.FC = () => {
         <div className='welcome'>Welcome to {to}</div>
         <select value={board} defaultValue={board} onChange={(e) => handleChangeBoard(e.target.value)}>
             <option value=''></option>
-            {boards.map(b => (<option value={b}>{b}</option>))}
+            {boards.map(b => (<option key={b} value={b}>{b}</option>))}
         </select>
     </Fragment>)
 }
