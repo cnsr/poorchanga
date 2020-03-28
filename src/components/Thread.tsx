@@ -4,54 +4,37 @@ import axios from 'axios'
 
 import {defaultUrl} from '../config';
 
+import {File, ThreadInterface} from '../interfaces/post';
+
 import '../styles/thread.css'
 
-interface File {
-    name: string
-    original: string
-    thumb: string
-    filename: string
-    filedata: string
-}
-
-interface ThreadInterface {
-    replies: Array<number>,
-    files: Array<File>,
-    locked: boolean,
-    roll: null
-    infinite: false
-    count: number
-    oppost: boolean
-    postcount: number
-    username: string
-    pinned: boolean
-    op: boolean
-    sage: boolean
+interface paramInterface {
     board: string
-    countryname: string
-    filecount: number
-    date: string
-    subject: string
-    thread: null | string
-    lastpost: string
-    admin: boolean
-    seal: boolean
-    country: string | null
-    trip: null | string
-    banned: boolean
-    text: string
 }
 
+interface AdditivesThread extends ThreadInterface {
+    isThread: boolean
+}
 
-const Thread:FC<ThreadInterface> = (props: ThreadInterface) => {
-    console.log(props);
+const Thread:FC<AdditivesThread> = (props: AdditivesThread) => {
+
+    const history = useHistory();
+    
+    const params = useParams<paramInterface>();
+
+    const openThread = (count: number) => {
+        if (props.isThread) history.push(`/${params.board}/${count}/`);
+    }
+
+    // console.log(props);
     return (
         <div className='thread-wrapper' id={`thread-${props.count}`}>
         <div className='thread' id={`thread-${props.count}`}>
             <div className='thread-header'>
                 <div className='username'>{props.username}</div>
                 <div className='date'>{props.date}</div>
-                <div className='count'>>>{props.count}</div>
+                <div className='count' onClick={e => openThread(props.count)}>>>{props.count}</div>
+                { props.oppost === true ? <div className='isOp'>OP</div> : null }
             </div>
             <div className='thread-body'>
                 <div className='thread-body-text'>
@@ -59,6 +42,7 @@ const Thread:FC<ThreadInterface> = (props: ThreadInterface) => {
                         {props.text}
                     </p>
                 </div>
+                { props.replies.length > 0 ?
                 <div className='thread-replies replies'>
                     <span className='pre-reply'><i>Replies: </i></span>
                     {props.replies!.map((reply) => 
@@ -66,7 +50,7 @@ const Thread:FC<ThreadInterface> = (props: ThreadInterface) => {
                             >>{reply}
                         </span>)
                     )}
-                </div>
+                </div> : null }
             </div>
         </div>
         </div>

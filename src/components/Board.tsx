@@ -6,8 +6,11 @@ import {onSnapshot} from 'mobx-state-tree';
 import {RootStoreModel} from '../store/root';
 import useInject from "../hooks/useInject";
 
-import Thread from './Thread'
-import '../styles/thread.css'
+import Thread from './Thread';
+import Form from './Form';
+import '../styles/thread.css';
+
+import {File, ThreadInterface} from '../interfaces/post';
 
 import {defaultUrl} from '../config';
 
@@ -18,42 +21,6 @@ interface BoardProps {
 
 interface RouteParams {
     board: string
-}
-
-interface File {
-    name: string
-    original: string
-    thumb: string
-    filename: string
-    filedata: string
-}
-
-interface ThreadInterface {
-    replies: Array<number>,
-    files: Array<File>,
-    locked: boolean,
-    roll: null
-    infinite: false
-    count: number
-    oppost: boolean
-    postcount: number
-    username: string
-    pinned: boolean
-    op: boolean
-    sage: boolean
-    board: string
-    countryname: string
-    filecount: number
-    date: string
-    subject: string
-    thread: null | string
-    lastpost: string
-    admin: boolean
-    seal: boolean
-    country: string | null
-    trip: null | string
-    banned: boolean
-    text: string
 }
 
 
@@ -72,7 +39,6 @@ const Main: React.FC<BoardProps> = observer((props) => {
     const changePageSize = () => {
         setPageSize(settings.pageSize);
         if (threads) setPages(totalPages(threads.length))
-        // if (page > pages) setPage(pages);
     }
 
     useEffect(() => {
@@ -126,16 +92,22 @@ const Main: React.FC<BoardProps> = observer((props) => {
     return (<Fragment>
         <span>current board: {board}</span>
         <span onClick={loadData}>REFRESH</span>
+        <Form />
         <div className='threads'>
             { isLoaded ? threads!.slice(perPage(), perPage() + pageSize).map((thread) => {
                 // let props = thread as ThreadInterface;
-                return <Thread key={thread.count} {...thread}/>;
+                return <Thread key={thread.count} {...{...thread, isThread: true}}/>;
             }) : <span>"loading"</span>}
         </div>
         <div className='pagination'>
-            <span className={ page === 0 ? 'pager-disabled pager' : 'pager' } onClick={decrementPage}>⮘</span>
-            <span>{page}</span>
-            <span className={ page === pages ? 'pager-disabled pager': 'pager' } onClick={incrementPage}>⮚</span>
+            { pages ? <Fragment>
+                <span className={ page === 0 ? 'pager-disabled pager' : 'pager' } onClick={decrementPage}>⮘</span>
+                {Array.from({length: pages + 1}, (x, i) => i).map(p => {
+                    if (p !== page) return <span key={p} className='page-btn' onClick={() => setPage(p)}>{p}</span>
+                    else return <span key={p} className='page-btn page-active'>{page}</span>
+                })}
+                <span className={ page === pages ? 'pager-disabled pager': 'pager' } onClick={incrementPage}>⮚</span>
+            </Fragment> : null }
         </div>
     </Fragment>)
 })
